@@ -65,7 +65,7 @@ public class BlockListener implements Listener {
         Location location = e.getBlock().getLocation();
         MovecraftLocation loc = MathUtils.bukkit2MovecraftLoc(location);
         for (Craft craft : MathUtils.craftsNearLocFast(CraftManager.getInstance().getCrafts(), location)) {
-            if (craft.getDisabled() || !craft.getHitBox().contains(loc))
+            if (craft.getDisabled() || !(craft instanceof PilotedCraft) || !craft.getHitBox().contains(loc))
                 continue;
 
             e.setCancelled(true);
@@ -73,7 +73,6 @@ public class BlockListener implements Listener {
         }
     }
 
-    //Prevents non pilots from placing blocks on your ship.
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent e) {
         if (!Settings.ProtectPilotedCrafts)
@@ -81,11 +80,8 @@ public class BlockListener implements Listener {
 
         Location location = e.getBlockAgainst().getLocation();
         MovecraftLocation loc = MathUtils.bukkit2MovecraftLoc(location);
-        Player p = e.getPlayer();
         for (Craft craft : MathUtils.craftsNearLocFast(CraftManager.getInstance().getCrafts(), location)) {
             if (craft.getDisabled() || !(craft instanceof PilotedCraft) || !craft.getHitBox().contains(loc))
-                continue;
-            if (((PilotedCraft) craft).getPilot() == p)
                 continue;
 
             e.setCancelled(true);
